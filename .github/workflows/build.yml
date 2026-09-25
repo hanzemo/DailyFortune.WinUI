@@ -1,9 +1,8 @@
-name: Build WinUI
+name: Build MSIX
 
 on:
   push:
     branches: [ main ]
-  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -24,11 +23,12 @@ jobs:
       - name: Restore
         run: dotnet restore DailyFortune.WinUI.csproj
 
-      - name: Build
-        run: dotnet build DailyFortune.WinUI.csproj -c Release --no-restore
+      - name: Build MSIX
+        run: msbuild DailyFortune.WinUI.csproj /p:Configuration=Release /p:Platform=x64 /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Never /p:AppxPackageSigningEnabled=false
 
-      - name: Upload artifact
+      - name: Upload MSIX
         uses: actions/upload-artifact@v4
         with:
-          name: DailyFortune-WinUI
-          path: bin/Release/
+          name: DailyFortune-MSIX
+          path: AppPackages/**/*.msix
+          if-no-files-found: warn
