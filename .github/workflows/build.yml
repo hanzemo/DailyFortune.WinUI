@@ -20,6 +20,18 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Remove old cert
+        shell: pwsh
+        run: |
+          if (Test-Path "${{ github.workspace }}\cert.pfx") {
+            Remove-Item "${{ github.workspace }}\cert.pfx" -Force
+            Write-Host "Removed old cert.pfx"
+          }
+          if (Test-Path "${{ github.workspace }}\cert\DailyFortune.pfx") {
+            Remove-Item "${{ github.workspace }}\cert\DailyFortune.pfx" -Force
+            Write-Host "Removed old cert/DailyFortune.pfx"
+          }
+
       - name: Generate self-signed cert
         shell: pwsh
         run: |
@@ -29,29 +41,23 @@ jobs:
             -KeyUsage DigitalSignature `
             -FriendlyName "DailyFortune" `
             -CertStoreLocation "Cert:\CurrentUser\My" `
+            -KeyExportPolicy Exportable `
             -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
 
           Write-Host "SUBJECT: $($cert.Subject)"
           Write-Host "THUMBPRINT: $($cert.Thumbprint)"
 
-          # 导出 pfx
           $pwd = ConvertTo-SecureString -String "DailyFortune123" -Force -AsPlainText
           Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\cert.pfx" -Password $pwd
-
-          # 导出 cer（供用户装信任）
           Export-Certificate -Cert $cert -FilePath "${{ github.workspace }}\cert\DailyFortune.cer"
 
-          # pfx 转 base64（存 artifact）
-          $bytes = [IO.File]::ReadAllBytes("${{ github.workspace }}\cert.pfx")
-          $b64 = [Convert]::ToBase64String($bytes)
-          $b64 | Out-File "${{ github.workspace }}\cert\DailyFortune.pfx.b64" -Encoding ASCII
+          Write-Host "cert.pfx size: $((Get-Item "${{ github.workspace }}\cert.pfx").Length)"
 
-      - name: Verify manifest Publisher matches cert
+      - name: Verify manifest Publisher
         shell: pwsh
         run: |
           [xml]$m = Get-Content "${{ github.workspace }}\Package.appxmanifest"
-          $pub = $m.Package.Identity.Publisher
-          Write-Host "MANIFEST PUBLISHER: $pub"
+          Write-Host "MANIFEST PUBLISHER: $($m.Package.Identity.Publisher)"
 
       - name: Restore
         run: dotnet restore DailyFortune.WinUI.csproj -r win-x64
@@ -60,6 +66,7 @@ jobs:
         shell: cmd
         run: |
           msbuild DailyFortune.WinUI.csproj ^
+            /t:Rebuild ^
             /p:Configuration=Release ^
             /p:Platform=x64 ^
             /p:RuntimeIdentifier=win-x64 ^
@@ -82,5 +89,4 @@ jobs:
             **/*.msix
             **/*.appx
             cert/DailyFortune.cer
-            cert/DailyFortune.pfx.b64
           if-no-files-found: error
