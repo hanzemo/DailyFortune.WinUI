@@ -10,3 +10,11 @@ publish/
 .vscode/
 .DS_Store
 ._*
+
+# 证书私钥 - 不提交
+*.pfx
+*.pfx.b64
+*.pfx.oneline
+cert.pfx
+cert/*.pfx
+cert/*.pfx.b64
