@@ -26,9 +26,12 @@ jobs:
       - name: Build MSIX
         run: msbuild DailyFortune.WinUI.csproj /p:Configuration=Release /p:Platform=x64 /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Never /p:AppxPackageSigningEnabled=false
 
+      - name: Find MSIX
+        run: Get-ChildItem -Path . -Recurse -Filter *.msix | Select-Object FullName
+
       - name: Upload MSIX
         uses: actions/upload-artifact@v4
         with:
           name: DailyFortune-MSIX
-          path: AppPackages/**/*.msix
-          if-no-files-found: warn
+          path: '**/*.msix'
+          if-no-files-found: error
