@@ -23,16 +23,10 @@ jobs:
       - name: Remove old cert
         shell: pwsh
         run: |
-          if (Test-Path "${{ github.workspace }}\cert.pfx") {
-            Remove-Item "${{ github.workspace }}\cert.pfx" -Force
-            Write-Host "Removed old cert.pfx"
-          }
-          if (Test-Path "${{ github.workspace }}\cert\DailyFortune.pfx") {
-            Remove-Item "${{ github.workspace }}\cert\DailyFortune.pfx" -Force
-            Write-Host "Removed old cert/DailyFortune.pfx"
-          }
+          Remove-Item "${{ github.workspace }}\cert.pfx" -Force -ErrorAction SilentlyContinue
 
-      - name: Generate self-signed cert
+      - name: Generate + import cert
+        id: cert
         shell: pwsh
         run: |
           $cert = New-SelfSignedCertificate `
@@ -46,12 +40,9 @@ jobs:
 
           Write-Host "SUBJECT: $($cert.Subject)"
           Write-Host "THUMBPRINT: $($cert.Thumbprint)"
+          echo "thumbprint=$($cert.Thumbprint)" >> $env:GITHUB_OUTPUT
 
-          $pwd = ConvertTo-SecureString -String "DailyFortune123" -Force -AsPlainText
-          Export-PfxCertificate -Cert $cert -FilePath "${{ github.workspace }}\cert.pfx" -Password $pwd
           Export-Certificate -Cert $cert -FilePath "${{ github.workspace }}\cert\DailyFortune.cer"
-
-          Write-Host "cert.pfx size: $((Get-Item "${{ github.workspace }}\cert.pfx").Length)"
 
       - name: Verify manifest Publisher
         shell: pwsh
@@ -62,7 +53,7 @@ jobs:
       - name: Restore
         run: dotnet restore DailyFortune.WinUI.csproj -r win-x64
 
-      - name: Build signed MSIX
+      - name: Build signed MSIX (thumbprint)
         shell: cmd
         run: |
           msbuild DailyFortune.WinUI.csproj ^
@@ -73,15 +64,14 @@ jobs:
             /p:UapAppxPackageBuildMode=SideloadOnly ^
             /p:AppxBundle=Never ^
             /p:AppxPackageSigningEnabled=true ^
-            /p:PackageCertificateKeyFile="${{ github.workspace }}\cert.pfx" ^
-            /p:PackageCertificatePassword=DailyFortune123 ^
+            /p:PackageCertificateThumbprint=${{ steps.cert.outputs.thumbprint }} ^
             /p:GenerateAppxPackageOnBuild=true
 
       - name: Find MSIX
         shell: pwsh
         run: Get-ChildItem -Recurse -Include *.msix,*.appx | Select-Object FullName, Length
 
-      - name: Upload MSIX + CER
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: DailyFortune-SignedMSIX
