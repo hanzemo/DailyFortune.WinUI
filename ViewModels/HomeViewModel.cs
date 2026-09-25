@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml;
 
 namespace DailyFortune.WinUI.ViewModels;
 
-public class HomeViewModel : INotifyPropertyChanged
+public partial class HomeViewModel : INotifyPropertyChanged
 {
     private readonly ApiService _api;
     private readonly AuthManager _auth;

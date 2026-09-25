@@ -8,7 +8,7 @@ namespace DailyFortune.WinUI.ViewModels;
 
 public record PasswordChange(string Current, string New);
 
-public class SettingsViewModel : INotifyPropertyChanged
+public partial class SettingsViewModel : INotifyPropertyChanged
 {
     private readonly ApiService _api;
     private readonly AuthManager _auth;

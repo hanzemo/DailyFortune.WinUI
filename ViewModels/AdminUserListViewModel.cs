@@ -11,7 +11,7 @@ public record RoleChange(UserMeProfile User, string Role);
 public record PasswordReset(UserMeProfile User, string NewPassword);
 public record UserEdit(UserMeProfile User, UserUpdatePayload Payload);
 
-public class AdminUserListViewModel : INotifyPropertyChanged
+public partial class AdminUserListViewModel : INotifyPropertyChanged
 {
     private readonly ApiService _api;
     private readonly AuthManager _auth;

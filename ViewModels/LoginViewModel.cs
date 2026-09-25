@@ -5,7 +5,7 @@ using DailyFortune.WinUI.Services;
 
 namespace DailyFortune.WinUI.ViewModels;
 
-public class LoginViewModel : INotifyPropertyChanged
+public partial class LoginViewModel : INotifyPropertyChanged
 {
     private readonly ApiService _api;
     private readonly AuthManager _auth;

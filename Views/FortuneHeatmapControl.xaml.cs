@@ -4,8 +4,6 @@ using Microsoft.UI.Xaml.Media;
 using System.Collections.ObjectModel;
 using DailyFortune.WinUI.Models;
 using DailyFortune.WinUI.Utilities;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace DailyFortune.WinUI.Views;
 

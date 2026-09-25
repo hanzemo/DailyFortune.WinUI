@@ -7,7 +7,7 @@ using DailyFortune.WinUI.Services;
 
 namespace DailyFortune.WinUI.ViewModels;
 
-public class LeaderboardViewModel : INotifyPropertyChanged
+public partial class LeaderboardViewModel : INotifyPropertyChanged
 {
     private readonly ApiService _api;
     public event PropertyChangedEventHandler? PropertyChanged;
