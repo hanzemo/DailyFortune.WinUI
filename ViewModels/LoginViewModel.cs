@@ -35,6 +35,8 @@ public partial class LoginViewModel : INotifyPropertyChanged
         try
         {
             var r = await _api.LoginAsync(Username, Password);
+            if (r.User is null) { Error = "登录失败：响应缺少用户信息"; return; }
+
             _auth.Login(r.AccessToken, r.RefreshToken, r.User);
         }
         catch (Exception ex) { Error = ex.Message; }

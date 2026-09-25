@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace DailyFortune.WinUI.Models;
 
-public class UserPublicProfile : INotifyPropertyChanged
+public partial class UserPublicProfile : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     private void Raise([CallerMemberName] string? n = null) => PropertyChanged?.Invoke(this, new(n));
@@ -44,4 +44,10 @@ public class UserPublicProfile : INotifyPropertyChanged
     [JsonPropertyName("use_qq_avatar")] public bool UseQqAvatar { get => _useQqAvatar; set { _useQqAvatar = value; Raise(); } }
     [JsonPropertyName("streak")] public int? Streak { get => _streak; set { _streak = value; Raise(); } }
     [JsonPropertyName("fortune_counts")] public Dictionary<string, int>? FortuneCounts { get => _fortuneCounts; set { _fortuneCounts = value; Raise(); } }
+
+    public string? GetDisplayAvatarUrl()
+    {
+        if (UseQqAvatar && Qq.HasValue) return $"https://q.qlogo.cn/g?b=qq&nk={Qq}&s=640";
+        return string.IsNullOrEmpty(AvatarUrl) ? null : AvatarUrl;
+    }
 }

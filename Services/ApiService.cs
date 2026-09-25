@@ -46,7 +46,7 @@ public class ApiService
         var resp = await _http.SendAsync(req);
         var data = await resp.Content.ReadAsStringAsync();
         if (!resp.IsSuccessStatusCode)
-            throw new ApiException((int)resp.StatusCode, ExtractError(data, resp.StatusCode));
+            throw new ApiException((int)resp.StatusCode, ExtractError(data, (int)resp.StatusCode));
         return JsonSerializer.Deserialize<T>(data, _json) ?? throw new ApiException(0, "空响应");
     }
 
@@ -62,7 +62,7 @@ public class ApiService
         if (!resp.IsSuccessStatusCode)
         {
             var data = await resp.Content.ReadAsStringAsync();
-            throw new ApiException((int)resp.StatusCode, ExtractError(data, resp.StatusCode));
+            throw new ApiException((int)resp.StatusCode, ExtractError(data, (int)resp.StatusCode));
         }
     }
 
