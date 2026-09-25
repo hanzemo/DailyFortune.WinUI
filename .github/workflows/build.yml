@@ -20,12 +20,22 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Decode certificate
+      - name: Decode + verify certificate
         shell: pwsh
         run: |
-          $bytes = [Convert]::FromBase64String("${{ secrets.CERT_BASE64 }}")
+          $b64 = "${{ secrets.CERT_BASE64 }}".Trim() -replace '\s',''
+          Write-Host "B64 length: $($b64.Length)"
+          $bytes = [Convert]::FromBase64String($b64)
           [IO.File]::WriteAllBytes("${{ github.workspace }}\cert.pfx", $bytes)
-          Write-Host "cert.pfx written, size = $($bytes.Length)"
+          Write-Host "cert.pfx size: $($bytes.Length)"
+          $pw = ConvertTo-SecureString -String "${{ secrets.CERT_PASSWORD }}" -Force -AsPlainText
+          try {
+            $pfxData = Get-PfxData -FilePath "${{ github.workspace }}\cert.pfx" -Password $pw
+            Write-Host "CERT SUBJECT: $($pfxData.EndEntityCertificates[0].Subject)"
+          } catch {
+            Write-Error "CERT DECODE FAILED: $_"
+            exit 1
+          }
 
       - name: Restore
         run: dotnet restore DailyFortune.WinUI.csproj -r win-x64
