@@ -20,38 +20,29 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Decode + verify certificate
+      - name: Decode certificate
         shell: pwsh
         run: |
           $b64 = "${{ secrets.CERT_BASE64 }}".Trim() -replace '\s',''
-          Write-Host "B64 length: $($b64.Length)"
           $bytes = [Convert]::FromBase64String($b64)
           [IO.File]::WriteAllBytes("${{ github.workspace }}\cert.pfx", $bytes)
           Write-Host "cert.pfx size: $($bytes.Length)"
-          $pw = ConvertTo-SecureString -String "${{ secrets.CERT_PASSWORD }}" -Force -AsPlainText
-          try {
-            $pfxData = Get-PfxData -FilePath "${{ github.workspace }}\cert.pfx" -Password $pw
-            Write-Host "CERT SUBJECT: $($pfxData.EndEntityCertificates[0].Subject)"
-          } catch {
-            Write-Error "CERT DECODE FAILED: $_"
-            exit 1
-          }
 
       - name: Restore
         run: dotnet restore DailyFortune.WinUI.csproj -r win-x64
 
       - name: Build signed MSIX
-        shell: pwsh
+        shell: cmd
         run: |
-          msbuild DailyFortune.WinUI.csproj `
-            /p:Configuration=Release `
-            /p:Platform=x64 `
-            /p:RuntimeIdentifier=win-x64 `
-            /p:UapAppxPackageBuildMode=SideloadOnly `
-            /p:AppxBundle=Never `
-            /p:AppxPackageSigningEnabled=true `
-            /p:PackageCertificateKeyFile="${{ github.workspace }}\cert.pfx" `
-            /p:PackageCertificatePassword="${{ secrets.CERT_PASSWORD }}" `
+          msbuild DailyFortune.WinUI.csproj ^
+            /p:Configuration=Release ^
+            /p:Platform=x64 ^
+            /p:RuntimeIdentifier=win-x64 ^
+            /p:UapAppxPackageBuildMode=SideloadOnly ^
+            /p:AppxBundle=Never ^
+            /p:AppxPackageSigningEnabled=true ^
+            /p:PackageCertificateKeyFile="${{ github.workspace }}\cert.pfx" ^
+            /p:PackageCertificatePassword=DailyFortune123 ^
             /p:GenerateAppxPackageOnBuild=true
 
       - name: Find MSIX
