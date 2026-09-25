@@ -6,7 +6,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity Name="DailyFortune.WinUI"
-            Publisher="CN=hanzemo, O=DailyFortune, C=CN"
+            Publisher="C=CN, O=DailyFortune, CN=hanzemo"
             Version="1.0.0.0" />
 
   <Properties>
