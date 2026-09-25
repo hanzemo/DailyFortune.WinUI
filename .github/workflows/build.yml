@@ -1,4 +1,4 @@
-name: Build MSIX
+name: Build Signed MSIX
 
 on:
   push:
@@ -20,37 +20,39 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Restore
-        run: dotnet restore DailyFortune.WinUI.csproj
-
-      - name: Publish MSIX
-        run: >
-          dotnet publish DailyFortune.WinUI.csproj
-          -c Release
-          -p:Platform=x64
-          -p:RuntimeIdentifier=win-x64
-          -p:UapAppxPackageBuildMode=SideloadOnly
-          -p:AppxPackageSigningEnabled=false
-          -p:AppxBundle=Never
-          -p:GenerateAppxPackageOnBuild=true
-          -o publish
-
-      - name: Find all msix/appx/msixupload
+      - name: Decode certificate
         shell: pwsh
         run: |
-          Write-Host "=== msix ==="
-          Get-ChildItem -Path . -Recurse -Include *.msix,*.appx,*.msixupload -ErrorAction SilentlyContinue |
-            ForEach-Object { Write-Host $_.FullName }
+          $bytes = [Convert]::FromBase64String("${{ secrets.CERT_BASE64 }}")
+          [IO.File]::WriteAllBytes("${{ github.workspace }}\cert.pfx", $bytes)
+          Write-Host "cert.pfx written, size = $($bytes.Length)"
 
-      - name: List publish
+      - name: Restore
+        run: dotnet restore DailyFortune.WinUI.csproj -r win-x64
+
+      - name: Build signed MSIX
         shell: pwsh
-        run: Get-ChildItem -Path publish -Recurse | Select-Object FullName
+        run: |
+          msbuild DailyFortune.WinUI.csproj `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:RuntimeIdentifier=win-x64 `
+            /p:UapAppxPackageBuildMode=SideloadOnly `
+            /p:AppxBundle=Never `
+            /p:AppxPackageSigningEnabled=true `
+            /p:PackageCertificateKeyFile="${{ github.workspace }}\cert.pfx" `
+            /p:PackageCertificatePassword="${{ secrets.CERT_PASSWORD }}" `
+            /p:GenerateAppxPackageOnBuild=true
 
-      - name: Upload MSIX
+      - name: Find MSIX
+        shell: pwsh
+        run: Get-ChildItem -Recurse -Include *.msix,*.appx | Select-Object FullName, Length
+
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: DailyFortune-MSIX
+          name: DailyFortune-SignedMSIX
           path: |
             **/*.msix
             **/*.appx
-          if-no-files-found: warn
+          if-no-files-found: error
