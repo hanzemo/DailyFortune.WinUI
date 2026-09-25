@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="DailyFortune.WinUI.Views.RegisterPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
+        <StackPanel Width="360" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+            <TextBlock Text="注册" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center"/>
+            <TextBox Header="用户名" Text="{x:Bind ViewModel.Username, Mode=TwoWay}"/>
+            <TextBox Header="邮箱" Text="{x:Bind ViewModel.Email, Mode=TwoWay}"/>
+            <PasswordBox Header="密码" Password="{x:Bind ViewModel.Password, Mode=TwoWay}"/>
+            <TextBlock Text="{x:Bind ViewModel.Error, Mode=OneWay}"
+                       Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                       TextWrapping="Wrap"/>
+            <InfoBar IsOpen="{x:Bind ViewModel.IsOpen, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"
+                     Severity="Warning" Title="注册已关闭" IsClosable="False"/>
+            <Button Content="注册" HorizontalAlignment="Stretch"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Command="{x:Bind ViewModel.RegisterCommand}"
+                    IsEnabled="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}"/>
+            <HyperlinkButton Content="已有账号？去登录" HorizontalAlignment="Center"
+                             Click="GoLogin_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>
