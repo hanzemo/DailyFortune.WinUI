@@ -37,6 +37,10 @@
                 </StackPanel>
             </Expander>
 
+            <Button Content="诊断" Click="Diagnostics_Click"
+                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                    Foreground="White"/>
+
             <Button Content="退出登录" Click="Logout_Click"/>
             <Button Content="注销账号"
                     Foreground="{ThemeResource SystemFillColorCriticalBrush}"

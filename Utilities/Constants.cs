@@ -1,3 +1,4 @@
+using DailyFortune.WinUI.Services;
 using Microsoft.UI;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
@@ -38,6 +39,7 @@ public static class Constants
     public static SolidColorBrush Brush(string? fortune, bool dark = false)
     {
         var key = fortune?.Trim() ?? "";
+        AppLog.Log($"[Brush] key=[{key}] len={key.Length} found={FortuneColors.ContainsKey(key)}");
         if (!FortuneColors.TryGetValue(key, out var hex))
             return new SolidColorBrush(Colors.Gray);
         return new SolidColorBrush(FromHex(hex, dark ? 0.7 : 1.0));

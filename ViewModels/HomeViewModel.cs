@@ -48,6 +48,7 @@ public partial class HomeViewModel : INotifyPropertyChanged
             try
             {
                 var r = await _api.GetMyProfileAsync();
+                AppLog.Log($"[Home] next_draw_at={r.NextDrawAt:O} Kind={r.NextDrawAt?.Kind} NowUtc={DateTime.UtcNow:O}");
                 _nextDrawAt = r.NextDrawAt;
                 StartCountdown();
             }
@@ -112,7 +113,8 @@ public partial class HomeViewModel : INotifyPropertyChanged
         var target = _nextDrawAt;
         if (target is null) { StopTimer(); return; }
 
-        var diff = target.Value - DateTime.UtcNow;
+        var diff = target.Value.ToUniversalTime() - DateTime.UtcNow;
+        AppLog.Log($"[Home] target=[{target.Value:O}] Kind={target.Value.Kind} nowUtc={DateTime.UtcNow:O} diff={diff}");
         if (diff <= TimeSpan.Zero)
         {
             StopTimer();

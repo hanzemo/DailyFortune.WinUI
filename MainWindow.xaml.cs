@@ -15,6 +15,9 @@ public sealed partial class MainWindow : Window
     {
         _auth = auth;
         InitializeComponent();
+
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(AppTitleBar);
         // InitializeComponent 之后再订阅，确保 DispatcherQueue 可用
         _auth.PropertyChanged += OnAuthChanged;
         Activated += OnFirstActivated;

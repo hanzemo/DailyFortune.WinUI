@@ -5,27 +5,45 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     Title="每日运势">
+
     <Grid>
-        <StackPanel x:Name="SplashPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-            <ProgressRing IsActive="True" Width="48" Height="48"/>
-            <TextBlock Text="正在加载..." HorizontalAlignment="Center"/>
-        </StackPanel>
-        <Frame x:Name="AuthFrame" Visibility="Collapsed"/>
-        <muxc:NavigationView x:Name="NavView" Visibility="Collapsed"
-                             IsBackButtonVisible="Collapsed"
-                             IsSettingsVisible="False"
-                             PaneDisplayMode="Left"
-                             OpenPaneLength="220"
-                             SelectionChanged="NavView_SelectionChanged">
-            <muxc:NavigationView.MenuItems>
-                <muxc:NavigationViewItem Content="主页" Tag="home" Icon="Home"/>
-                <muxc:NavigationViewItem Content="排行榜" Tag="leaderboard" Icon="List"/>
-                <muxc:NavigationViewItem Content="我的" Tag="profile" Icon="Contact"/>
-                <muxc:NavigationViewItem Content="设置" Tag="settings" Icon="Setting"/>
-                <muxc:NavigationViewItem x:Name="AdminNavItem" Content="管理" Tag="admin"
-                                          Icon="People" Visibility="Collapsed"/>
-            </muxc:NavigationView.MenuItems>
-            <Frame x:Name="ContentFrame"/>
-        </muxc:NavigationView>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="32" Background="Transparent">
+            <TextBlock Text="每日运势"
+                       VerticalAlignment="Center"
+                       Margin="16,0,0,0"
+                       FontSize="12"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <StackPanel x:Name="SplashPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                <ProgressRing IsActive="True" Width="48" Height="48"/>
+                <TextBlock Text="正在加载..." HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <Frame x:Name="AuthFrame" Visibility="Collapsed"/>
+
+            <muxc:NavigationView x:Name="NavView" Visibility="Collapsed"
+                                 IsBackButtonVisible="Collapsed"
+                                 IsSettingsVisible="False"
+                                 PaneDisplayMode="Left"
+                                 OpenPaneLength="220"
+                                 SelectionChanged="NavView_SelectionChanged">
+                <muxc:NavigationView.MenuItems>
+                    <muxc:NavigationViewItem Content="主页" Tag="home"/>
+                    <muxc:NavigationViewItem Content="排行榜" Tag="leaderboard"/>
+                    <muxc:NavigationViewItem Content="我的" Tag="profile"/>
+                    <muxc:NavigationViewItem Content="设置" Tag="settings"/>
+                    <muxc:NavigationViewItem x:Name="AdminNavItem" Content="管理" Tag="admin"
+                                              Visibility="Collapsed"/>
+                </muxc:NavigationView.MenuItems>
+                <Frame x:Name="ContentFrame"/>
+            </muxc:NavigationView>
+        </Grid>
     </Grid>
 </Window>

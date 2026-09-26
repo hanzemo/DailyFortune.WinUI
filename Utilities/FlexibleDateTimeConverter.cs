@@ -1,4 +1,5 @@
 using System.Globalization;
+using DailyFortune.WinUI.Services;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -17,6 +18,7 @@ public class FlexibleDateTimeConverter : JsonConverter<DateTime>
     {
         var s = reader.GetString();
         if (string.IsNullOrEmpty(s)) return default;
+        AppLog.Log($"[DateParse] raw=[{s}]");
 
         // 带时区标记，标准解析
         foreach (var f in Formats)
@@ -30,7 +32,9 @@ public class FlexibleDateTimeConverter : JsonConverter<DateTime>
         if (DateTime.TryParseExact(s, "yyyy-MM-dd'T'HH:mm:ss",
             CultureInfo.InvariantCulture, DateTimeStyles.None, out var local))
         {
-            return DateTime.SpecifyKind(local, DateTimeKind.Utc).AddHours(-8);
+            var utc = DateTime.SpecifyKind(local, DateTimeKind.Utc).AddHours(-8);
+            AppLog.Log($"[DateParse] no-tz → utc=[{utc:O}]");
+            return utc;
         }
 
         if (DateTime.TryParse(s, CultureInfo.InvariantCulture,
