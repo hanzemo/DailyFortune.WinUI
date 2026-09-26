@@ -1,3 +1,4 @@
+using DailyFortune.WinUI.Models;
 using DailyFortune.WinUI.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -27,8 +28,14 @@ public sealed partial class LeaderboardPage : Page
 
     private void Period_Checked(object sender, RoutedEventArgs e)
     {
-        if (!_loaded) return; // 初始化阶段忽略
+        if (!_loaded) return;
         if (sender is RadioButton rb && rb.Tag is string tag && int.TryParse(tag, out var i))
             ViewModel.PeriodIndex = i;
+    }
+
+    private void User_Click(object sender, ItemClickEventArgs e)
+    {
+        if (e.ClickedItem is not LeaderboardUser user) return;
+        Frame.Navigate(typeof(ProfilePage), user.Username);
     }
 }

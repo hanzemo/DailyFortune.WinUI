@@ -25,16 +25,11 @@ public class FlexibleDateTimeConverter : JsonConverter<DateTime>
                 return dt;
         }
 
+        // 服务器返回北京时间字面值，转 UTC 减 8 小时
         if (DateTime.TryParseExact(s, "yyyy-MM-dd'T'HH:mm:ss",
             CultureInfo.InvariantCulture, DateTimeStyles.None, out var local))
         {
-            try
-            {
-                var tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
-                return TimeZoneInfo.ConvertTimeToUtc(
-                    DateTime.SpecifyKind(local, DateTimeKind.Unspecified), tz);
-            }
-            catch { return DateTime.SpecifyKind(local, DateTimeKind.Utc); }
+            return DateTime.SpecifyKind(local, DateTimeKind.Utc).AddHours(-8);
         }
 
         if (DateTime.TryParse(s, CultureInfo.InvariantCulture,

@@ -18,8 +18,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     private string _displayName = "";
     private string _bio = "";
     private string _email = "";
-    private string _language = "zh-CN";
+    private string _language = "zh";
     private string _timezone = "Asia/Shanghai";
+    private string _avatarUrl = "";
+    private string _backgroundUrl = "";
+    private string _qq = "";
+    private bool _useQqAvatar;
     private string? _message;
     private bool _isSaving;
 
@@ -28,6 +32,10 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     public string Email { get => _email; set { _email = value; Raise(); } }
     public string Language { get => _language; set { _language = value; Raise(); } }
     public string Timezone { get => _timezone; set { _timezone = value; Raise(); } }
+    public string AvatarUrl { get => _avatarUrl; set { _avatarUrl = value; Raise(); } }
+    public string BackgroundUrl { get => _backgroundUrl; set { _backgroundUrl = value; Raise(); } }
+    public string Qq { get => _qq; set { _qq = value; Raise(); } }
+    public bool UseQqAvatar { get => _useQqAvatar; set { _useQqAvatar = value; Raise(); } }
     public string? Message { get => _message; set { _message = value; Raise(); } }
     public bool IsSaving { get => _isSaving; set { _isSaving = value; Raise(); } }
 
@@ -47,6 +55,10 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         Email = u.Email;
         Language = u.Language;
         Timezone = u.Timezone;
+        AvatarUrl = u.AvatarUrl;
+        BackgroundUrl = u.BackgroundUrl;
+        Qq = u.Qq?.ToString() ?? "";
+        UseQqAvatar = u.UseQqAvatar;
     }
 
     [RelayCommand]
@@ -63,6 +75,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
             if (Email != u.Email) p.Email = Email;
             if (Language != u.Language) p.Language = Language;
             if (Timezone != u.Timezone) p.Timezone = Timezone;
+            if (AvatarUrl != u.AvatarUrl) p.AvatarUrl = AvatarUrl;
+            if (BackgroundUrl != u.BackgroundUrl) p.BackgroundUrl = BackgroundUrl;
+            if (UseQqAvatar != u.UseQqAvatar) p.UseQqAvatar = UseQqAvatar;
+
+            var newQq = long.TryParse(Qq, out var q) ? q : (long?)null;
+            if (newQq != u.Qq) p.Qq = newQq;
 
             var r = await _api.UpdateMyProfileAsync(p);
             _auth.UpdateUser(r.User);

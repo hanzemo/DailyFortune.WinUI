@@ -11,6 +11,14 @@
             <TextBox Header="简介" Text="{x:Bind ViewModel.Bio, Mode=TwoWay}"
                      AcceptsReturn="True" TextWrapping="Wrap" Height="80"/>
             <TextBox Header="邮箱" Text="{x:Bind ViewModel.Email, Mode=TwoWay}"/>
+
+            <TextBox Header="头像 URL" Text="{x:Bind ViewModel.AvatarUrl, Mode=TwoWay}"
+                     PlaceholderText="https://..."/>
+            <TextBox Header="背景图 URL" Text="{x:Bind ViewModel.BackgroundUrl, Mode=TwoWay}"
+                     PlaceholderText="https://..."/>
+            <TextBox Header="QQ 号" Text="{x:Bind ViewModel.Qq, Mode=TwoWay}"/>
+            <ToggleSwitch Header="使用 QQ 头像" IsOn="{x:Bind ViewModel.UseQqAvatar, Mode=TwoWay}"/>
+
             <ComboBox Header="时区" ItemsSource="{x:Bind ViewModel.Timezones}"
                       SelectedItem="{x:Bind ViewModel.Timezone, Mode=TwoWay}"
                       HorizontalAlignment="Stretch"/>
@@ -25,8 +33,7 @@
                 <StackPanel Spacing="8">
                     <PasswordBox x:Name="CurPwd" Header="当前密码"/>
                     <PasswordBox x:Name="NewPwd" Header="新密码"/>
-                    <Button Content="确认修改"
-                            Click="ChangePassword_Click"/>
+                    <Button Content="确认修改" Click="ChangePassword_Click"/>
                 </StackPanel>
             </Expander>
 

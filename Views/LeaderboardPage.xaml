@@ -27,8 +27,11 @@
                         <StackPanel Margin="0,0,0,16" Spacing="8">
                             <TextBlock Text="{x:Bind Fortune}" FontSize="22" FontWeight="Bold"
                                        Foreground="{x:Bind Fortune, Converter={StaticResource StringToBrushConverter}}"/>
-                            <ItemsControl ItemsSource="{x:Bind Users}">
-                                <ItemsControl.ItemTemplate>
+                            <ListView ItemsSource="{x:Bind Users}"
+                                      IsItemClickEnabled="True"
+                                      ItemClick="User_Click"
+                                      SelectionMode="None">
+                                <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="models:LeaderboardUser">
                                         <Grid Padding="8,4">
                                             <Grid.ColumnDefinitions>
@@ -40,8 +43,8 @@
                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                                         </Grid>
                                     </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                </ListView.ItemTemplate>
+                            </ListView>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
