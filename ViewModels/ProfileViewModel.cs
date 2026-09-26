@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace DailyFortune.WinUI.ViewModels;
 
-public class ProfileViewModel : INotifyPropertyChanged
+public partial class ProfileViewModel : INotifyPropertyChanged
 {
     private readonly ApiService _api;
     private readonly AuthManager _auth;
