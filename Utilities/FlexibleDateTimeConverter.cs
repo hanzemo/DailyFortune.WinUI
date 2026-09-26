@@ -1,7 +1,7 @@
 using System.Globalization;
-using DailyFortune.WinUI.Services;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DailyFortune.WinUI.Services;
 
 namespace DailyFortune.WinUI.Utilities;
 
@@ -18,25 +18,33 @@ public class FlexibleDateTimeConverter : JsonConverter<DateTime>
     {
         var s = reader.GetString();
         if (string.IsNullOrEmpty(s)) return default;
-        AppLog.Log($"[DateParse] raw=[{s}]");
+        AppLog.Log($"[DateParse] raw=[{s}] len={s.Length}");
 
-        // 带时区标记，标准解析
+        // 无时区：2026-09-27T00:00:00 正好 19 字符，第 11 位是 'T'
+        if (s.Length == 19 && s[10] == 'T')
+        {
+            if (DateTime.TryParseExact(s, "yyyy-MM-dd'T'HH:mm:ss",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var local))
+            {
+                // 当北京时间，减 8 得 UTC
+                var utc = DateTime.SpecifyKind(local, DateTimeKind.Utc).AddHours(-8);
+                AppLog.Log($"[DateParse] no-tz → utc=[{utc:O}]");
+                return utc;
+            }
+        }
+
+        // 带时区的
         foreach (var f in Formats)
         {
             if (DateTime.TryParseExact(s, f, CultureInfo.InvariantCulture,
                 DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var dt))
+            {
+                AppLog.Log($"[DateParse] tz → utc=[{dt:O}]");
                 return dt;
+            }
         }
 
-        // 无时区 → 后端返回北京时间字面值 → 减去 8 小时得 UTC
-        if (DateTime.TryParseExact(s, "yyyy-MM-dd'T'HH:mm:ss",
-            CultureInfo.InvariantCulture, DateTimeStyles.None, out var local))
-        {
-            var utc = DateTime.SpecifyKind(local, DateTimeKind.Utc).AddHours(-8);
-            AppLog.Log($"[DateParse] no-tz → utc=[{utc:O}]");
-            return utc;
-        }
-
+        // 兜底
         if (DateTime.TryParse(s, CultureInfo.InvariantCulture,
             DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var any))
             return any;
