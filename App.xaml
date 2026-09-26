@@ -10,8 +10,8 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls"/>
             </ResourceDictionary.MergedDictionaries>
             <conv:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
-            <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolConverter"/>
             <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+            <conv:InverseBoolConverter x:Key="InverseBoolConverter"/>
             <conv:StringToBrushConverter x:Key="StringToBrushConverter"/>
             <conv:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
         </ResourceDictionary>
