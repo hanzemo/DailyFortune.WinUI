@@ -45,11 +45,11 @@
                                  OpenPaneLength="220"
                                  SelectionChanged="NavView_SelectionChanged">
                 <muxc:NavigationView.MenuItems>
-                    <muxc:NavigationViewItem Content="主页" Tag="home"/>
-                    <muxc:NavigationViewItem Content="排行榜" Tag="leaderboard"/>
-                    <muxc:NavigationViewItem Content="我的" Tag="profile"/>
-                    <muxc:NavigationViewItem Content="设置" Tag="settings"/>
-                    <muxc:NavigationViewItem x:Name="AdminNavItem" Content="管理" Tag="admin"
+                    <muxc:NavigationViewItem Content="主页" Tag="home" Icon="Home"/>
+                    <muxc:NavigationViewItem Content="排行榜" Tag="leaderboard" Icon="List"/>
+                    <muxc:NavigationViewItem Content="我的" Tag="profile" Icon="Contact"/>
+                    <muxc:NavigationViewItem Content="设置" Tag="settings" Icon="Setting"/>
+                    <muxc:NavigationViewItem x:Name="AdminNavItem" Content="管理" Tag="admin" Icon="People"
                                               Visibility="Collapsed"/>
                 </muxc:NavigationView.MenuItems>
                 <Frame x:Name="ContentFrame"/>
