@@ -42,8 +42,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <PersonPicture Width="48" Height="48"
-                                       ProfilePicture="{x:Bind AvatarUrl}"/>
+                        <PersonPicture Width="48" Height="48"/>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
                             <StackPanel Orientation="Horizontal" Spacing="8">

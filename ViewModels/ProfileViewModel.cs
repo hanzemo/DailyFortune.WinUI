@@ -34,8 +34,8 @@ public partial class ProfileViewModel : INotifyPropertyChanged
     public bool HasDrawnToday => Profile?.HasDrawnToday ?? false;
     public int TotalDraws => Profile?.TotalDraws ?? 0;
     public int Streak => Profile?.Streak ?? 0;
-    public string RegistrationDate => Profile?.RegistrationDate.ToString("yyyy-MM-dd") ?? "";
-    public string LastActiveDate => Profile?.LastActiveDate.ToString("yyyy-MM-dd") ?? "";
+    public string RegistrationDate => Profile?.RegistrationDate.ToLocalTime().ToString("yyyy-MM-dd") ?? "";
+    public string LastActiveDate => Profile?.LastActiveDate.ToLocalTime().ToString("yyyy-MM-dd") ?? "";
     public ImageSource? AvatarImage => TryImage(Profile?.GetDisplayAvatarUrl());
     public ImageSource? BackgroundImage => TryImage(Profile?.BackgroundUrl);
     public SolidColorBrush FortuneBrush => Utilities.Constants.Brush(Profile?.TodaysFortune);
