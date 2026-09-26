@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace DailyFortune.WinUI.ViewModels;
 
-public partial class ProfileViewModel : INotifyPropertyChanged
+public class ProfileViewModel : INotifyPropertyChanged
 {
     private readonly ApiService _api;
     private readonly AuthManager _auth;
@@ -26,7 +26,6 @@ public partial class ProfileViewModel : INotifyPropertyChanged
     public bool HasProfile => Profile != null;
     public bool IsMe => _targetUsername == null;
 
-    // 扁平化属性，方便 x:Bind
     public string DisplayName => Profile?.DisplayName ?? "";
     public string UsernameDisplay => Profile == null ? "" : "@" + Profile.Username;
     public string Bio => Profile?.Bio ?? "";
@@ -34,8 +33,9 @@ public partial class ProfileViewModel : INotifyPropertyChanged
     public bool HasDrawnToday => Profile?.HasDrawnToday ?? false;
     public int TotalDraws => Profile?.TotalDraws ?? 0;
     public int Streak => Profile?.Streak ?? 0;
-    public string RegistrationDate => Profile?.RegistrationDate.ToLocalTime().ToString("yyyy-MM-dd") ?? "";
-    public string LastActiveDate => Profile?.LastActiveDate.ToLocalTime().ToString("yyyy-MM-dd") ?? "";
+    public string RegistrationDate => Profile == null ? "" : Profile.RegistrationDate.ToLocalTime().ToString("yyyy-MM-dd");
+    public string LastActiveDate => Profile == null ? "" : Profile.LastActiveDate.ToLocalTime().ToString("yyyy-MM-dd");
+
     public ImageSource? AvatarImage => TryImage(Profile?.GetDisplayAvatarUrl());
     public ImageSource? BackgroundImage => TryImage(Profile?.BackgroundUrl);
     public SolidColorBrush FortuneBrush => Utilities.Constants.Brush(Profile?.TodaysFortune);
@@ -95,7 +95,8 @@ public partial class ProfileViewModel : INotifyPropertyChanged
     private static ImageSource? TryImage(string? url)
     {
         if (string.IsNullOrEmpty(url)) return null;
-        return new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(url));
+        try { return new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(url)); }
+        catch { return null; }
     }
 
     private static UserPublicProfile ToPublic(UserMeProfile p) => new()

@@ -18,6 +18,7 @@ public class FlexibleDateTimeConverter : JsonConverter<DateTime>
         var s = reader.GetString();
         if (string.IsNullOrEmpty(s)) return default;
 
+        // 带时区标记，标准解析
         foreach (var f in Formats)
         {
             if (DateTime.TryParseExact(s, f, CultureInfo.InvariantCulture,
@@ -25,7 +26,7 @@ public class FlexibleDateTimeConverter : JsonConverter<DateTime>
                 return dt;
         }
 
-        // 服务器返回北京时间字面值，转 UTC 减 8 小时
+        // 无时区 → 后端返回北京时间字面值 → 减去 8 小时得 UTC
         if (DateTime.TryParseExact(s, "yyyy-MM-dd'T'HH:mm:ss",
             CultureInfo.InvariantCulture, DateTimeStyles.None, out var local))
         {
