@@ -12,12 +12,22 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- 自定义标题栏：左侧文字，右侧留空给系统按钮 -->
         <Grid x:Name="AppTitleBar" Grid.Row="0" Height="32" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
             <TextBlock Text="每日运势"
+                       Grid.Column="0"
                        VerticalAlignment="Center"
                        Margin="16,0,0,0"
                        FontSize="12"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+            <!-- 右侧留空，系统按钮会画在这里 -->
+            <Grid Grid.Column="1" x:Name="TitleBarRightSpacer"/>
         </Grid>
 
         <Grid Grid.Row="1">

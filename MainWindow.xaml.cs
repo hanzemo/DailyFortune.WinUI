@@ -18,9 +18,38 @@ public sealed partial class MainWindow : Window
 
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
-        // InitializeComponent 之后再订阅，确保 DispatcherQueue 可用
+
+        // 处理系统按钮遮挡
+        AppTitleBar.SizeChanged += OnTitleBarSizeChanged;
+        AppTitleBar.Loaded += OnTitleBarLoaded;
+
         _auth.PropertyChanged += OnAuthChanged;
         Activated += OnFirstActivated;
+    }
+
+    private void OnTitleBarLoaded(object sender, RoutedEventArgs e)
+    {
+        UpdateTitleBarPadding();
+    }
+
+    private void OnTitleBarSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        UpdateTitleBarPadding();
+    }
+
+    private void UpdateTitleBarPadding()
+    {
+        if (AppWindow is null) return;
+
+        var scale = AppTitleBar.XamlRoot?.RasterizationScale ?? 1.0;
+        var titleBar = AppWindow.TitleBar;
+
+        // 左侧 inset 系统按钮（如果有）
+        var leftInset = titleBar.LeftInset / scale;
+        var rightInset = titleBar.RightInset / scale;
+
+        // 给 AppTitleBar 加 Padding，避免文字被系统按钮盖住
+        AppTitleBar.Padding = new Thickness(leftInset, 0, rightInset, 0);
     }
 
     private async void OnFirstActivated(object sender, WindowActivatedEventArgs e)
