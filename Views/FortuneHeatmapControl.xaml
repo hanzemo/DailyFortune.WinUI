@@ -2,25 +2,31 @@
 <UserControl x:Class="DailyFortune.WinUI.Views.FortuneHeatmapControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="using:Microsoft.UI.Xaml.Controls">
-    <controls:ItemsRepeaterScrollHost>
-        <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollMode="Disabled">
-            <controls:ItemsRepeater ItemsSource="{x:Bind Cells, Mode=OneWay}">
-                <controls:ItemsRepeater.Layout>
-                    <controls:UniformGridLayout Orientation="Vertical"
-                                                 MaximumRowsOrColumns="7"
-                                                 MinItemWidth="16" MinItemHeight="16"
-                                                 MinRowSpacing="2" MinColumnSpacing="2"/>
-                </controls:ItemsRepeater.Layout>
-                <controls:ItemsRepeater.ItemTemplate>
-                    <DataTemplate>
-                        <Border Width="14" Height="14" CornerRadius="2"
-                                Background="{Binding Brush}"
-                                ToolTipService.ToolTip="{Binding Tooltip}"/>
-                    </DataTemplate>
-                </controls:ItemsRepeater.ItemTemplate>
-            </controls:ItemsRepeater>
-        </ScrollViewer>
-    </controls:ItemsRepeaterScrollHost>
+             xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+             xmlns:local="using:DailyFortune.WinUI.Views">
+
+    <!-- 给一个最小高度，防止塌陷 -->
+    <ScrollViewer HorizontalScrollMode="Auto"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollMode="Disabled"
+                  VerticalScrollBarVisibility="Disabled"
+                  MinHeight="120">
+        <controls:ItemsRepeater ItemsSource="{x:Bind Cells, Mode=OneWay}">
+            <controls:ItemsRepeater.Layout>
+                <controls:UniformGridLayout Orientation="Vertical"
+                                             MaximumRowsOrColumns="7"
+                                             MinItemWidth="16"
+                                             MinItemHeight="16"
+                                             MinRowSpacing="2"
+                                             MinColumnSpacing="2"/>
+            </controls:ItemsRepeater.Layout>
+            <controls:ItemsRepeater.ItemTemplate>
+                <DataTemplate x:DataType="local:HeatCell">
+                    <Border Width="14" Height="14" CornerRadius="2"
+                            Background="{x:Bind Brush, Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind Tooltip, Mode=OneWay}"/>
+                </DataTemplate>
+            </controls:ItemsRepeater.ItemTemplate>
+        </controls:ItemsRepeater>
+    </ScrollViewer>
 </UserControl>
