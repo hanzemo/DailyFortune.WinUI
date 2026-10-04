@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using DailyFortune.WinUI.Models;
 using DailyFortune.WinUI.Services;
 using DailyFortune.WinUI.Utilities;
@@ -37,21 +38,35 @@ public sealed partial class FortuneHeatmapControl : UserControl
 
     private static void OnHistoryChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is FortuneHeatmapControl c)
-        {
-            var newList = (IEnumerable<FortuneHistoryItem>?)e.NewValue;
-            AppLog.Log($"[Heatmap] History 变化, count={newList?.Count() ?? 0}");
-            c.Rebuild();
-        }
+        if (d is not FortuneHeatmapControl c) return;
+
+        // 取消旧集合订阅
+        if (e.OldValue is INotifyCollectionChanged oldColl)
+            oldColl.CollectionChanged -= c.OnCollectionChanged;
+
+        // 订阅新集合
+        if (e.NewValue is INotifyCollectionChanged newColl)
+            newColl.CollectionChanged += c.OnCollectionChanged;
+
+        var count = (e.NewValue as IEnumerable<FortuneHistoryItem>)?.Count() ?? 0;
+        AppLog.Log($"[Heatmap] History 属性变化, count={count}");
+        c.Rebuild();
+    }
+
+    private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        var count = History?.Count() ?? 0;
+        AppLog.Log($"[Heatmap] 集合内容变化 {e.Action}, count={count}");
+        Rebuild();
     }
 
     private void Rebuild()
     {
         Cells.Clear();
 
-        AppLog.Log($"[Heatmap] Rebuild 开始, History={(History == null ? "null" : History.Count().ToString())}");
+        var historyCount = History?.Count() ?? 0;
+        AppLog.Log($"[Heatmap] Rebuild 开始, History.Count={historyCount}");
 
-        // 用北京时间日期做 key
         var byDate = new Dictionary<DateTime, string>();
         if (History != null)
         {
@@ -69,8 +84,6 @@ public sealed partial class FortuneHeatmapControl : UserControl
 
         var today = DateTime.Now.AddHours(8).Date;
         var start = today.AddDays(-364);
-
-        AppLog.Log($"[Heatmap] 生成范围: {start:yyyy-MM-dd} 到 {today:yyyy-MM-dd}");
 
         int colored = 0;
         for (var d = start; d <= today; d = d.AddDays(1))
@@ -101,6 +114,6 @@ public sealed partial class FortuneHeatmapControl : UserControl
             });
         }
 
-        AppLog.Log($"[Heatmap] Rebuild 完成: 总格子={Cells.Count}, 有色格子={colored}");
+        AppLog.Log($"[Heatmap] Rebuild 完成: 总={Cells.Count}, 有色={colored}");
     }
 }
